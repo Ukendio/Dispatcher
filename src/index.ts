@@ -43,7 +43,7 @@ export { noYield } from "./noYield";
 export default class Dispatcher {
 	private currentListHead = undefined! as Listener;
 
-	connect(handler: Callback) {
+	setup(handler: Callback) {
 		const listener: Listener = {
 			handler: handler,
 			disconnected: false,
@@ -52,7 +52,7 @@ export default class Dispatcher {
 			next: this.currentListHead,
 		};
 
-		const disconnect = () => {
+		const dispose = () => {
 			if (listener.disconnected) {
 				throw `Listener connected at: \n${listener.connectTraceback}\nwas already disconnected at listener.disconnectTraceback`;
 			}
@@ -83,7 +83,7 @@ export default class Dispatcher {
 			 * We don't want to expose the listener property
 			 */
 			listener: listener,
-			disconnect: disconnect,
+			dispose: dispose,
 		};
 	}
 
@@ -91,11 +91,11 @@ export default class Dispatcher {
 	 * @hidden
 	 * we declare this field so that promise can consume it in promise::fromEvent
 	 */
-	Connect(...args: Parameters<Dispatcher["connect"]>) {
-		return this.connect(...args);
+	Connect(...args: Parameters<Dispatcher["setup"]>) {
+		return this.setup(...args);
 	}
 
-	fire(...args: unknown[]) {
+	dispatch(...args: unknown[]) {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
@@ -106,7 +106,7 @@ export default class Dispatcher {
 		}
 	}
 
-	fireNoYield(...args: unknown[]) {
+	dispatchSafe(...args: unknown[]) {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
