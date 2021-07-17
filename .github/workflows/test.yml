@@ -52,5 +52,5 @@ jobs:
                   else {
                     echo "Generated files changed!"
                     git commit -m "${{github.event.commits[0].author.name}}: ${{github.event.commits[0].message}} [skip ci]"
-                    git push https://Ukendio:${{ secrets.github_token }}@github.com/Ukendio/.git HEAD:master
+                    git push https://Ukendio:${{ secrets.github_token }}@github.com/Ukendio/Dispatcher.git HEAD:master
                   }
