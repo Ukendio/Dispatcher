@@ -79,7 +79,7 @@ export default class Dispatcher {
 
 		return {
 			/**
-			 * @hidden
+			 * @internal
 			 * We don't want to expose the listener property
 			 */
 			listener: listener,
