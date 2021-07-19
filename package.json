@@ -1,7 +1,7 @@
 {
-  "name": "@rbxts/dispatcher",
+  "name": "@rbxts/yessir",
   "version": "0.0.1",
-  "description": "Dispatcher",
+  "description": "Yessir",
   "keywords": [
     "Roblox"
   ],
@@ -9,7 +9,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ukendio/Dispatcher.git"
+    "url": "git+https://github.com/Ukendio/Yessir.git"
   },
   "types": "out/index.d.ts",
   "files": [
@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@rbxts/log": "^0.4.0-alpha.1",
+    "@rbxts/rust-classes": "^0.10.0",
     "roblox-ts": "^1.2.3-dev.4574aa9"
   }
 }

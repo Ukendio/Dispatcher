@@ -1,6 +1,5 @@
-import Log from "@rbxts/log";
+import { DispatcherBuilder } from "dispatcherBuilder";
 import { noYield } from "./noYield";
-import SingleEvent from "./singleEvent";
 
 interface Listener {
 	handler: Callback;
@@ -10,37 +9,11 @@ interface Listener {
 	next: Listener;
 }
 
-export function interval(duration: number, callback: Callback) {
-	const event = new SingleEvent((dispatch) => (_listener, _promise, isCancelled) => {
-		let loop: Callback = async () => {
-			return Promise.try(dispatch)
-				.andThenCall(Promise.delay, duration)
-				.then(() => {
-					if (
-						!isCancelled(() => {
-							Log.Warn("[Event] Rejected");
-							loop = undefined!;
-						})
-					) {
-						return loop();
-					}
-				});
-		};
-
-		loop();
-	});
-
-	return {
-		event: event,
-		callback: callback,
-	};
-}
+type Setup = (handler: Callback) => { listener: Listener; dispose: () => void };
 
 const tracebackReporter = (message: unknown) => debug.traceback(tostring(message));
 
-export { noYield } from "./noYield";
-
-export default class Dispatcher {
+export default class Yessir {
 	private currentListHead = undefined! as Listener;
 
 	setup(handler: Callback) {
@@ -79,7 +52,7 @@ export default class Dispatcher {
 
 		return {
 			/**
-			 * @internal
+			 * @hidden
 			 * We don't want to expose the listener property
 			 */
 			listener: listener,
@@ -91,11 +64,11 @@ export default class Dispatcher {
 	 * @hidden
 	 * we declare this field so that promise can consume it in promise::fromEvent
 	 */
-	Connect(...args: Parameters<Dispatcher["setup"]>) {
+	Connect(...args: Parameters<Setup>) {
 		return this.setup(...args);
 	}
 
-	dispatch(...args: unknown[]) {
+	fireUnsafe(...args: unknown[]) {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
@@ -106,7 +79,7 @@ export default class Dispatcher {
 		}
 	}
 
-	dispatchSafe(...args: unknown[]) {
+	fireSafe(...args: unknown[]) {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
@@ -121,3 +94,9 @@ export default class Dispatcher {
 		}
 	}
 }
+
+export { DispatcherBuilder };
+
+export { noYield } from "./noYield";
+
+export { interval } from "./interval";
