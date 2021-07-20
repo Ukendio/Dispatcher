@@ -21,7 +21,7 @@ export class DispatcherBuilder {
 			.collect();
 
 		if (name.size() > 0) {
-			if (entry.isEmpty()) {
+			if (!entry.isEmpty()) {
 				entry.insert(id, dependencies);
 			}
 		}
