@@ -1,6 +1,8 @@
+import { Option, OptionMut } from "@rbxts/rust-classes";
+
 class SingleEvent {
-	private listener: Callback | undefined;
-	private promise = undefined! as Promise<unknown>;
+	private listener = OptionMut.none<Callback>();
+	private promise = Option.none<Promise<unknown>>();
 
 	constructor(
 		executor: (
@@ -12,23 +14,22 @@ class SingleEvent {
 		) => void,
 	) {
 		const dispatch = () => {
-			if (this.listener !== undefined) {
-				coroutine.wrap(this.listener)();
-			}
+			coroutine.wrap(this.listener.expect("Unexpected Error"));
 		};
-		this.promise = Promise.defer((resolve) => {
-			resolve(new Promise(executor(dispatch)).then(() => (this.listener = undefined)));
-		});
+		this.promise = Option.some(
+			Promise.defer((resolve) => {
+				resolve(new Promise(executor(dispatch)).then(() => (this.listener = OptionMut.none())));
+			}),
+		);
 	}
 
 	connect(handler: Callback) {
-		assert(this.listener === undefined, "Dispatcher is already used up");
-		assert(this.promise.getStatus() === "Started", "Dispatcher is already used up");
+		assert(this.promise.expect("Unexpected Error").getStatus() === "Started", "Dispatcher has already started");
+		this.listener.replace(this.listener.okOrElse(() => handler).expectErr("Dispatcher is already used up"));
 
-		this.listener = handler;
 		const disconnect = () => {
-			this.promise.cancel();
-			this.listener = undefined!;
+			this.promise.expect("Unexpected Error").cancel();
+			this.listener = OptionMut.none();
 		};
 
 		return {
