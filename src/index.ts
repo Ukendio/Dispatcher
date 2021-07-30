@@ -1,3 +1,4 @@
+import { Result } from "@rbxts/rust-classes";
 import { DispatcherBuilder } from "dispatcherBuilder";
 import { noYield } from "./noYield";
 
@@ -88,10 +89,12 @@ export default class Yessir {
 					noYield(listener.handler, ...args);
 				}, tracebackReporter);
 
-				if (!ok) throw result;
+				if (!ok) return Result.err(result as string);
 			}
 			listener = listener.next;
 		}
+
+		return Result.ok({});
 	}
 }
 
