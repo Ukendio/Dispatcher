@@ -1,4 +1,4 @@
-import { Result } from "@rbxts/rust-classes";
+import { Result, UnitType } from "@rbxts/rust-classes";
 import { DispatcherBuilder } from "dispatcherBuilder";
 import { noYield } from "./noYield";
 
@@ -80,7 +80,7 @@ export default class Yessir {
 		}
 	}
 
-	fireSafe(...args: unknown[]) {
+	fireSafe(...args: unknown[]): Result<UnitType, string> {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
