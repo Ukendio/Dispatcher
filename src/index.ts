@@ -42,10 +42,10 @@ export interface Setup {
 
 export type BuildSetup = (fn: Callback) => Setup;
 
-export default class Yessir {
+export default class Yessir<T extends unknown[]> {
 	private currentListHead = undefined! as Listener;
 
-	setup<F extends Callback>(fn: F): Setup {
+	setup<F extends (...args: T) => void>(fn: F): Setup {
 		const listener = identity<Listener>({
 			fn,
 			disconnected: false,
@@ -93,7 +93,7 @@ export default class Yessir {
 		return this.setup(...args);
 	}
 
-	dispatchPar<T extends unknown[]>(...args: T) {
+	dispatchPar(...args: T) {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
