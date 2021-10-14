@@ -1,4 +1,3 @@
-import { Result, UnitType } from "@rbxts/rust-classes";
 import { DispatcherBuilder } from "dispatcherBuilder";
 
 interface Listener {
@@ -46,7 +45,7 @@ export type BuildSetup = (fn: Callback) => Setup;
 export default class Yessir {
 	private currentListHead = undefined! as Listener;
 
-	setup(fn: Callback): Setup {
+	setup<F extends Callback>(fn: F): Setup {
 		const listener = identity<Listener>({
 			fn,
 			disconnected: false,
@@ -94,7 +93,7 @@ export default class Yessir {
 		return this.setup(...args);
 	}
 
-	dispatchPar(...args: unknown[]) {
+	dispatchPar<T extends unknown[]>(...args: T) {
 		let listener = this.currentListHead;
 
 		while (listener !== undefined) {
